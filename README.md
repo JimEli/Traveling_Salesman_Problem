@@ -1,5 +1,5 @@
-# Travelling_Salesman_Problem
-## Solve travelling salesman problem.
+# Traveling_Salesman_Problem
+## Solve traveling salesman problem.
 
 ### Program title: Route Optimizer
 
