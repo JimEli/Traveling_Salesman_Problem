@@ -179,7 +179,7 @@ class TSP
 	}
 
 	// Optimize TSP solution by taking a route that crosses over itself and reordering so that it does not.
-	// https://en.wikipedia.org/wiki/2-opt
+	// See: https://en.wikipedia.org/wiki/2-opt
 	bool twoOpt(std::vector<int>& tour, const std::vector<std::vector<int>>& am, int bestDist)
 	{
 		bool repeat = false;
@@ -215,17 +215,7 @@ class TSP
 
 		return repeat;
 	}
-/*
-	// Calculate tour cost.
-	int cost(std::vector<int>& tour, const std::vector<std::vector<int>>& am) 
-	{
-		int d = am[tour[0]][tour[n - 1]];
-		for (auto i = tour.begin(); i < (tour.end() - 1); ++i)
-			d += am[*i][*(i + 1)];
-	
-		return d;
-	}
-*/
+
 public:
 	// Ctor.
 	explicit TSP(const size_t num) : n(num)
@@ -249,16 +239,6 @@ public:
 		// Create minimum spanning tree.
 		std::vector<std::vector<Node>> mstAdjMatrix = mst(adjMatrix);
 
-/*
-		// Make subgraph of mst for vertices with an odd degree.
-		std::vector<int> odds;
-		[&]() {
-			for (auto i = mstAdjMatrix.begin(); i < mstAdjMatrix.end(); ++i)
-				if ((*i).size() % 2)
-					odds.push_back(std::distance(mstAdjMatrix.begin(), i));
-		}();
-		match(mstAdjMatrix, odds, adjMatrix);
-*/
 		// Make subgraph of mst for vertices with an odd degree, then perfect match odd vertices to get multigraph.
 		match(mstAdjMatrix, [&](){ std::vector<int> odds;
 		for (auto i = mstAdjMatrix.begin(); i < mstAdjMatrix.end(); ++i)
@@ -278,8 +258,6 @@ public:
 			d += adjMatrix[*i][*(i + 1)];
 		return d; };
 
-//		while (twoOpt(tour.path, adjMatrix, cost(tour.path, adjMatrix)));
-//			tour.cost = cost(tour.path, adjMatrix);
 		while (twoOpt(tour.path, adjMatrix, cost()));
 		tour.cost = cost();
 
