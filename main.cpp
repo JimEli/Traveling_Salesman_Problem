@@ -28,7 +28,10 @@
 #include "utility.h"
 
 // Visual Leak Detector.
-#include "C:\Program Files (x86)\Visual Leak Detector\include\vld.h"
+//#include "C:\Program Files (x86)\Visual Leak Detector\include\vld.h"
+
+using AdjMatrix = std::vector<std::vector<int>>;
+using CoordinateArray = std::vector<std::array<double, 2>>;
 
 // Distance equation scaling factor.
 double scaleFactor = 1.0;
@@ -36,7 +39,7 @@ double scaleFactor = 1.0;
 // fillMatrix return status.
 enum Status { FAIL = 0, SUCCESS, RETRY };
 
-Status fillMatrix(const size_t n, const std::vector<std::array<double, 2>>& pts, std::vector<std::vector<int>>& am)
+Status fillMatrix(const size_t n, const CoordinateArray& pts, AdjMatrix& am)
 {
 	// Fill matrix with cost (haversine distance).
 	for (size_t r = 0; r < n; r++)
@@ -92,7 +95,7 @@ int main(int argc, char* argv[])
 	}
 
 	// Attempt input from file.
-	std::vector<std::array<double, 2>> coordinates;
+	CoordinateArray coordinates;
 	size_t numCoords = readFile(argv[1], coordinates);
 	if (!numCoords)
 		return EXIT_FAILURE;
@@ -104,7 +107,7 @@ int main(int argc, char* argv[])
 		std::cout << (numCoords - n) << " duplicate coordinates removed.\n";
 
 	// Attempt to fill adjacency matrix (scale distances if necessary).
-	std::vector<std::vector<int>> adjMatrix;
+	AdjMatrix adjMatrix;
 	adjMatrix.resize(n, std::vector<int>(n, 0));
 	Status status;
 	while ((status = fillMatrix(n, coordinates, adjMatrix)) != SUCCESS)
