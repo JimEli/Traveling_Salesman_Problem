@@ -28,11 +28,11 @@ class KML
 
 public:
     KML() = default;
+
     ~KML()
     {
         if (!tagStack.empty())
-            std::cerr << "KML file error: closing file with open tags.\n";
-        ofs << "</kml>\n";
+            std::cerr << "KML file error: file closed with open tags.\n";
         ofs.close();
     }
 
@@ -60,7 +60,9 @@ public:
     void end()
     {
         if (!tagStack.empty())
-            std::cerr << "KML file error: closing file with open tags.\n";
+            std::cerr << "KML file error: attempting to close with open tags.\n";
+        while (!tagStack.empty())
+            tagClose();
         ofs << "</kml>\n";
         ofs.close();
     }
