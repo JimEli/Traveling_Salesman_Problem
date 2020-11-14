@@ -1,3 +1,4 @@
+// File input/ouput utilites.
 #ifndef FILE_H
 #define FILE_H
 
@@ -10,8 +11,10 @@
 
 #include "kml.h"
 
+using CoordinateArray = std::vector<std::array<double, 2>>;
+
 // Reads csv file of coordinates.
-size_t readFile(const std::string fn, std::vector<std::array<double, 2>>& table)
+size_t readFile(const std::string fn, CoordinateArray& table)
 {
     std::ifstream in(fn);
     size_t n = 0;
@@ -43,7 +46,7 @@ size_t readFile(const std::string fn, std::vector<std::array<double, 2>>& table)
 }
 
 // Writes basic kml file with solution.
-void writeFile(const std::string fn, const std::vector<std::array<double, 2>>& pts, const std::vector<int>& tour)
+void writeFile(const std::string fn, const CoordinateArray& pts, const std::vector<int>& tour)
 {
     KML kml;
 
