@@ -260,17 +260,18 @@ public:
 
 		// Create hamiltonian cycle by removing duplicates.
 		tour.path.erase(removeDuplicates(tour.path.begin(), tour.path.end()), tour.path.end());
-/*
+		/*
 		// Calculate cost of a tour.
-		auto cost = [&]() { int d = adjMatrix[tour.path[0]][tour.path[n - 1]];
+		auto cost = [&tour, am=adjMatrix, n=n]() { int d = am[tour.path[0]][tour.path[n - 1]];
 		for (auto i = tour.path.begin(); i < (tour.path.end() - 1); ++i)
-			d += adjMatrix[*i][*(i + 1)];
+			d += am[*i][*(i + 1)];
 		return d; };
-*/
+
+		while (twoOpt(tour.path, adjMatrix, cost()));
+		tour.cost = cost();
+		*/
 		while (twoOpt(tour.path, adjMatrix, cost(tour.path, adjMatrix)));
 			tour.cost = cost(tour.path, adjMatrix);
-//		while (twoOpt(tour.path, adjMatrix, cost()));
-//		tour.cost = cost();
 
 		return tour;
 	}
