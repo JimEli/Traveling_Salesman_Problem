@@ -13,15 +13,16 @@
 // Reads csv file of coordinates.
 size_t readFile(const std::string fn, std::vector<std::array<double, 2>>& table)
 {
-    std::string sRow;
     std::ifstream in(fn);
-    size_t n = 0;
 
     if (!in)
     {
         std::cerr << "Unable to read file \"" << fn << "\"\n";
         return n;
     }
+
+    std::string sRow;
+    size_t n = 0;
 
     while (getline(in, sRow))
     {
