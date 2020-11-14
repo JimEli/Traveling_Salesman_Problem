@@ -216,6 +216,15 @@ class TSP
 		return repeat;
 	}
 
+	// Calculate tour cost.
+	int cost(std::vector<int>& tour, const std::vector<std::vector<int>>& am) 
+	{
+		int d = am[tour[0]][tour[n - 1]];
+		for (auto i = tour.begin(); i < (tour.end() - 1); ++i)
+			d += am[*i][*(i + 1)];
+		return d;
+	}
+
 public:
 	// Ctor.
 	explicit TSP(const size_t num) : n(num)
@@ -251,15 +260,17 @@ public:
 
 		// Create hamiltonian cycle by removing duplicates.
 		tour.path.erase(removeDuplicates(tour.path.begin(), tour.path.end()), tour.path.end());
-
+/*
 		// Calculate cost of a tour.
 		auto cost = [&]() { int d = adjMatrix[tour.path[0]][tour.path[n - 1]];
 		for (auto i = tour.path.begin(); i < (tour.path.end() - 1); ++i)
 			d += adjMatrix[*i][*(i + 1)];
 		return d; };
-
-		while (twoOpt(tour.path, adjMatrix, cost()));
-		tour.cost = cost();
+*/
+		while (twoOpt(tour.path, adjMatrix, cost(tour.path, adjMatrix)));
+			tour.cost = cost(tour.path, adjMatrix);
+//		while (twoOpt(tour.path, adjMatrix, cost()));
+//		tour.cost = cost();
 
 		return tour;
 	}
