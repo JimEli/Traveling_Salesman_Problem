@@ -14,6 +14,7 @@
 size_t readFile(const std::string fn, std::vector<std::array<double, 2>>& table)
 {
     std::ifstream in(fn);
+    size_t n = 0;
 
     if (!in)
     {
@@ -22,7 +23,6 @@ size_t readFile(const std::string fn, std::vector<std::array<double, 2>>& table)
     }
 
     std::string sRow;
-    size_t n = 0;
 
     while (getline(in, sRow))
     {
