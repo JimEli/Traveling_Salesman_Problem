@@ -49,10 +49,13 @@ class TSP
 		bool removed{ false };
 	};
 
+	using AdjMatrix = std::vector<std::vector<int>>;
+	using AdjList = std::vector<std::vector<Node>>;
+
 	// Create minimum spanning tree.
-	std::vector<std::vector<Node>> mst(const std::vector<std::vector<int> >& am)
+	AdjList mst(const AdjMatrix& am)
 	{
-		std::vector<std::vector<Node>> adjList(n);
+		AdjList adjList(n);
 		std::vector<size_t> key(n, std::numeric_limits<size_t>::max());
 		std::vector<int> parent(n);
 
@@ -84,7 +87,7 @@ class TSP
 	}
 
 	// Perfect match of odd vertices (its not the minimal match, but its a small match).
-	void match(std::vector<std::vector<Node>>& graph, std::vector<int> oddVertices, const std::vector<std::vector<int>> am)
+	void match(AdjList& graph, std::vector<int> oddVertices, const AdjMatrix am)
 	{
 		int index = 0;
 		for (size_t i = 0; i < oddVertices.size() / 2; i++)
@@ -95,12 +98,11 @@ class TSP
 				index++;
 				currVertex = oddVertices[index];
 			}
-
 			int length = std::numeric_limits<int>::max();
 			int nearestVert = -1;
 			std::unique_ptr<int> nearestVertPtr = nullptr;
 
-			for (auto j=oddVertices.begin(); j<oddVertices.end(); ++j)
+			for (auto j = oddVertices.begin(); j < oddVertices.end(); ++j)
 			{
 				if (*j != -1 && index != std::distance(oddVertices.begin(), j) && am[currVertex][*j] < length)
 				{
@@ -121,7 +123,7 @@ class TSP
 	}
 
 	// Create euler path.
-	std::vector<int> euler(std::vector<std::vector<Node>>& graph, int v1)
+	std::vector<int> euler(AdjList& graph, int v1)
 	{
 		int numAvailable;
 		std::stack<Node> available;
@@ -179,8 +181,8 @@ class TSP
 	}
 
 	// Optimize TSP solution by taking a route that crosses over itself and reordering so that it does not.
-	// See: https://en.wikipedia.org/wiki/2-opt
-	bool twoOpt(std::vector<int>& tour, const std::vector<std::vector<int>>& am, int bestDist)
+	// https://en.wikipedia.org/wiki/2-opt
+	bool twoOpt(std::vector<int>& tour, const AdjMatrix& am, int bestDist)
 	{
 		bool repeat = false;
 
@@ -215,16 +217,17 @@ class TSP
 
 		return repeat;
 	}
-
+	/*
 	// Calculate tour cost.
-	int cost(std::vector<int>& tour, const std::vector<std::vector<int>>& am) 
+	int cost(std::vector<int>& tour, const AdjMatrix& am) 
 	{
 		int d = am[tour[0]][tour[n - 1]];
 		for (auto i = tour.begin(); i < (tour.end() - 1); ++i)
 			d += am[*i][*(i + 1)];
+	
 		return d;
 	}
-
+	*/
 public:
 	// Ctor.
 	explicit TSP(const size_t num) : n(num)
@@ -237,7 +240,7 @@ public:
 	}
 
 	// Solve.
-	Tour operator() (std::vector<std::vector<int>>& adjMatrix)
+	Tour operator() (AdjMatrix& adjMatrix)
 	{
 		// Solution.
 		Tour tour;
@@ -246,21 +249,30 @@ public:
 			return tour;
 
 		// Create minimum spanning tree.
-		std::vector<std::vector<Node>> mstAdjMatrix = mst(adjMatrix);
-
+		AdjList mstAdjList = mst(adjMatrix);
+		/*
+		// Make subgraph of mst for vertices with an odd degree.
+		std::vector<int> odds;
+		[&]() {	for (auto i = mstAdjList.begin(); i < mstAdjList.end(); ++i)
+					if ((*i).size() % 2)
+						odds.push_back(std::distance(mstAdjList.begin(), i));
+		}();
+		match(mstAdjList, odds, adjMatrix);
+		*/
 		// Make subgraph of mst for vertices with an odd degree, then perfect match odd vertices to get multigraph.
-		match(mstAdjMatrix, [&](){ std::vector<int> odds;
-		for (auto i = mstAdjMatrix.begin(); i < mstAdjMatrix.end(); ++i)
+		match(mstAdjList, [&](){ std::vector<int> odds;
+			for (auto i = mstAdjList.begin(); i < mstAdjList.end(); ++i)
 			if ((*i).size() % 2)
-				odds.push_back(std::distance(mstAdjMatrix.begin(), i));
-		return odds; }(), adjMatrix);
+				odds.push_back(std::distance(mstAdjList.begin(), i));
+			return odds; 
+		}(), adjMatrix);
 
 		// Create euler path from multigraph starting from first vertex.
-		tour.path = euler(mstAdjMatrix, mstAdjMatrix[0][0].v1);
+		tour.path = euler(mstAdjList, mstAdjList[0][0].v1);
 
 		// Create hamiltonian cycle by removing duplicates.
 		tour.path.erase(removeDuplicates(tour.path.begin(), tour.path.end()), tour.path.end());
-		/*
+
 		// Calculate cost of a tour.
 		auto cost = [&tour, am=adjMatrix, n=n]() { int d = am[tour.path[0]][tour.path[n - 1]];
 		for (auto i = tour.path.begin(); i < (tour.path.end() - 1); ++i)
@@ -269,9 +281,9 @@ public:
 
 		while (twoOpt(tour.path, adjMatrix, cost()));
 		tour.cost = cost();
-		*/
-		while (twoOpt(tour.path, adjMatrix, cost(tour.path, adjMatrix)));
-			tour.cost = cost(tour.path, adjMatrix);
+
+		//while (twoOpt(tour.path, adjMatrix, cost(tour.path, adjMatrix)));
+		//tour.cost = cost(tour.path, adjMatrix);
 
 		return tour;
 	}
