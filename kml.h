@@ -32,9 +32,12 @@ public:
     ~KML()
     {
         if (!tagStack.empty())
-            std::cerr << "KML file error: file closed with open tags.\n";
-        ofs << "</kml>\n";
-        ofs.close();
+        {
+            std::cerr << "KML file error: attempting to close file with open tags.\n";
+            end();
+        }
+        if (ofs.is_open())
+            ofs.close();
     }
 
     bool open(const std::string fn)
@@ -60,10 +63,9 @@ public:
 
     void end()
     {
-        if (!tagStack.empty())
-            std::cerr << "KML file error: attempting to close with open tags.\n";
         while (!tagStack.empty())
-            tagClose();
+            tagClose();    
+        ofs << "</kml>\n";
         ofs.close();
     }
 
