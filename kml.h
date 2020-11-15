@@ -58,14 +58,14 @@ public:
         }
 
         ofs << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<kml>\n";
+        tagStack.push("kml");
         return true;
     }
 
     void end()
     {
         while (!tagStack.empty())
-            tagClose();    
-        ofs << "</kml>\n";
+            tagClose();
         ofs.close();
     }
 
