@@ -217,17 +217,7 @@ class TSP
 
 		return repeat;
 	}
-	/*
-	// Calculate tour cost.
-	int cost(std::vector<int>& tour, const AdjMatrix& am) 
-	{
-		int d = am[tour[0]][tour[n - 1]];
-		for (auto i = tour.begin(); i < (tour.end() - 1); ++i)
-			d += am[*i][*(i + 1)];
-	
-		return d;
-	}
-	*/
+
 public:
 	// Ctor.
 	explicit TSP(const size_t num) : n(num)
@@ -250,15 +240,7 @@ public:
 
 		// Create minimum spanning tree.
 		AdjList mstAdjList = mst(adjMatrix);
-		/*
-		// Make subgraph of mst for vertices with an odd degree.
-		std::vector<int> odds;
-		[&]() {	for (auto i = mstAdjList.begin(); i < mstAdjList.end(); ++i)
-					if ((*i).size() % 2)
-						odds.push_back(std::distance(mstAdjList.begin(), i));
-		}();
-		match(mstAdjList, odds, adjMatrix);
-		*/
+
 		// Make subgraph of mst for vertices with an odd degree, then perfect match odd vertices to get multigraph.
 		match(mstAdjList, [&](){ std::vector<int> odds;
 			for (auto i = mstAdjList.begin(); i < mstAdjList.end(); ++i)
@@ -281,9 +263,6 @@ public:
 
 		while (twoOpt(tour.path, adjMatrix, cost()));
 		tour.cost = cost();
-
-		//while (twoOpt(tour.path, adjMatrix, cost(tour.path, adjMatrix)));
-		//tour.cost = cost(tour.path, adjMatrix);
 
 		return tour;
 	}
