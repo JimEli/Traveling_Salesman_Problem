@@ -89,6 +89,7 @@ void writeFile(const std::string fn, const CoordinateArray& pts, const std::vect
 
         // Finish file.
         kml.tagClose(); // folder.
+        kml.end(); // kml.
     }
     else
         std::cerr << "Error opening output file.\n";
