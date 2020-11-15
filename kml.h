@@ -33,6 +33,7 @@ public:
     {
         if (!tagStack.empty())
             std::cerr << "KML file error: file closed with open tags.\n";
+        ofs << "</kml>\n";
         ofs.close();
     }
 
@@ -63,11 +64,10 @@ public:
             std::cerr << "KML file error: attempting to close with open tags.\n";
         while (!tagStack.empty())
             tagClose();
-        ofs << "</kml>\n";
         ofs.close();
     }
 
-    void tagOpen(const char* tag)
+    void tagOpen(const std::string tag)
     {
         incIndent();
         indent();
@@ -75,7 +75,7 @@ public:
         ofs << '<' << tag << ">\n";
     }
 
-    void tagField(const char* field, bool newline = false)
+    void tagField(const std::string field, bool newline = false)
     {
         indent();
         ofs << ' ' << field << ' ';
@@ -91,7 +91,7 @@ public:
         tagStack.pop();
     }
 
-    void tagStart(const char* tag)
+    void tagStart(const std::string tag)
     {
         incIndent();
         indent();
@@ -99,7 +99,7 @@ public:
         ofs << '<' << tag << " ";
     }
 
-    void tagEnd(const char* field) { ofs << field << ">\n"; }
+    void tagEnd(const std::string field) { ofs << field << ">\n"; }
 
     void tagLine(const std::string id, const std::string field)
     {
